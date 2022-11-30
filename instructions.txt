@@ -1,0 +1,14 @@
+To build the app:
+Use docker to containerize/and precompile
+https://genieframework.github.io/Genie.jl/dev/tutorials/16--Using_Genie_With_Docker.html
+
+
+Can build on AWS but need a powerful machine (8Gb of mem) to docker build
+https://genieframework.github.io/Genie.jl/dev/guides/Deploying_Genie_Apps_On_AWS.html
+
+Alternatively scp from local computer the docker container. One can save a docker container with
+docker save project > project.tar
+to see docker containers use "docker images"
+Then scp over
+scp -i aws_key.pem my-demo-app.tar ec2-user@ip.address:my-demo-app.tar
+need to do this for a julia image as well

@@ -13,6 +13,8 @@ Then scp over
 scp -i aws_key.pem my-demo-app.tar ec2-user@ip.address:my-demo-app.tar
 need to do this for a julia image as well
 
+# then run this for http only
+docker run -p 80:8000 topo-app
 
 Set up Apache server and HTTPS:
 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html
@@ -21,8 +23,12 @@ run docker to map to port 8000 (internal port) and then change config files to:
 <VirtualHost *:80>
     DocumentRoot "/var/www/html"
     ServerName "www.topologicalatlas.org"
+ProxyRequests Off
+ProxyPreserveHost Off    
 ProxyPass / http://0.0.0.0:8080/
+ProxyPass /check/ http://0.0.0.0:8080/
 ProxyPassReverse / http://0.0.0.0:8080/
+ProxyPassReverse /check/ http://0.0.0.0:8080/
 RewriteEngine on
 RewriteCond %{SERVER_NAME} =www.topologicalatlas.org
 RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
@@ -34,7 +40,9 @@ RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
     DocumentRoot "/var/www/html"
     ServerName "www.topologicalatlas.org"
     ProxyPass / http://0.0.0.0:8000/
+    ProxyPass /check/ http://0.0.0.0:8080/
     ProxyPassReverse / http://0.0.0.0:8000/
+    ProxyPassReverse /check/ http://0.0.0.0:8080/
 SSLCertificateFile /etc/letsencrypt/live/www.topologicalatlas.org/fullchain.pem
 SSLCertificateKeyFile /etc/letsencrypt/live/www.topologicalatlas.org/privkey.pem
 Include /etc/letsencrypt/options-ssl-apache.conf

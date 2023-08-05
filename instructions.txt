@@ -16,6 +16,16 @@ need to do this for a julia image as well
 # then run this for http only
 docker run -p 80:8000 topo-app
 
+############# reboot script
+#!/bin/bash
+
+systemctl stop docker.service
+#sudo kill `sudo lsof -t -i:80`
+kill -9 $(lsof -t -i:80) || echo "Process was not running."
+systemctl start docker.service
+nohup docker run -p 80:8000 topo-app 1>/dev/null 2>/dev/null &
+#############
+
 Set up Apache server and HTTPS:
 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html
 
